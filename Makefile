@@ -17,6 +17,9 @@ run:
 test:
 	go test ./...
 
+test-cover:
+	go test -cover ./...
+
 lint:
 	golangci-lint run ./...
 
