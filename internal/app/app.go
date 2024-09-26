@@ -47,19 +47,19 @@ func NewService(
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
-	restApiServer := api.NewRestApiServer()
+	restApiServer := api.NewRestApiServer(srv, log)
 
 	router := mux.NewRouter()
 	router.Use(middleware.RequestID)
 	router.Use(telemetryMiddleware)
 
+	// system endpoints
 	router.HandleFunc("/live", health.LivenessHandler(app)).Methods("GET")
 	router.HandleFunc("/ready", health.ReadinessHandler(app)).Methods("GET")
-	//
-	// router.HandleFunc("/api/file/{id}", handler.GetFileItem(srv)).Methods("GET")
-	// router.HandleFunc("/api/file", handler.PutFileItem(srv)).Methods("PUT")
 
-	h := restapi.HandlerFromMux(restApiServer, router)
+	// users endpoints
+	baseURL := "/api/v1"
+	h := restapi.HandlerFromMuxWithBaseURL(restApiServer, router, baseURL)
 
 	server, err := web.New(log, port, h)
 	if err != nil {

@@ -52,29 +52,27 @@ func New(path string) (*Storage, error) {
 // AddUser creates a new user in the database.
 func (s *Storage) AddUser(ctx context.Context, source *models.User) error {
 	query := `
-		INSERT INTO users (email, first_name, last_name, is_active, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		INSERT INTO users (email, first_name, last_name, password, is_active, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id;
 	`
 
-	// Добавляем контекст с телеметрией
 	ctx, span := trccontext.WithTelemetrySpan(ctx, "Storage.AddUser")
 	defer span.End()
 
-	// Подготовка аргументов для вставки
 	createdAt := time.Now()
 	updatedAt := time.Now()
 
-	// Выполняем запрос с передачей параметров
 	err := s.db.QueryRowContext(
 		ctx, query,
 		source.Email,
 		source.FirstName,
 		source.LastName,
+		source.Password,
 		source.IsActive,
 		createdAt,
 		updatedAt,
-	).Scan(&source.Id) // Получаем сгенерированный ID
+	).Scan(&source.Id)
 
 	if err != nil {
 		span.SetError(err)
@@ -106,7 +104,7 @@ func (s *Storage) GetUserById(ctx context.Context, id int) (*models.User, error)
 	)
 
 	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil // Вернём nil, если пользователь не найден
+		return nil, fmt.Errorf("user with ID %d not found", id)
 	}
 
 	if err != nil {
@@ -120,8 +118,8 @@ func (s *Storage) GetUserById(ctx context.Context, id int) (*models.User, error)
 func (s *Storage) UpdateUser(ctx context.Context, id int, source *models.User) error {
 	query := `
 		UPDATE users
-		SET email = $1, first_name = $2, last_name = $3, is_active = $4, updated_at = $5
-		WHERE id = $6;
+		SET email = $1, first_name = $2, last_name = $3, password = $4, is_active = $5, updated_at = $6
+		WHERE id = $7;
 	`
 
 	updatedAt := time.Now()
@@ -131,6 +129,7 @@ func (s *Storage) UpdateUser(ctx context.Context, id int, source *models.User) e
 		source.Email,
 		source.FirstName,
 		source.LastName,
+		source.Password,
 		source.IsActive,
 		updatedAt,
 		id,

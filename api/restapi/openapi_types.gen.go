@@ -17,6 +17,7 @@ type User struct {
 	Id        *int       `json:"id,omitempty"`
 	IsActive  *bool      `json:"is_active,omitempty"`
 	LastName  *string    `json:"last_name,omitempty"`
+	Password  *string    `json:"password,omitempty"`
 	UpdatedAt *time.Time `json:"updated_at,omitempty"`
 }
 
