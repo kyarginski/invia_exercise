@@ -88,3 +88,29 @@ To update test coverage, run:
 ```shell
 make update-readme
 ```
+
+## Implementation
+
+1) The implementation starts with a contract description in the OpenAPI-format
+`swagger/swagger.yaml`. 
+2) According to the contract description, the code for the server is generated:
+```shell
+make gen
+```
+3) Next, we need to implement the implementation code in the file `api/impl.go` and the corresponding tests.
+4) Generation of mocks for the test is performed by the command
+```shell
+make mocks
+```
+5) Testing can be performed using a contract file `swagger/swagger.yaml` or a utility program like `Postman`.
+6) OpenTelemetry (Jaeger) can be used to check performance and errors in the application.
+
+## Authentication and Authorization
+
+For further improvements.
+
+An application can use JWT for authentication and authorization. 
+The JWT token will be generated when the user logs in and will be used for subsequent requests. 
+The token will be stored in the `Authorization` header.
+
+Or we can use a third-party system such as [KeyCloak](https://www.keycloak.org/)
