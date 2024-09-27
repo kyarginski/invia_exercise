@@ -1,3 +1,23 @@
+COVERAGE_FILE=coverage.out
+
+.PHONY: test-cover
+test-cover:
+	@echo "Running tests and generating coverage report..."
+	@go test -coverprofile=$(COVERAGE_FILE) ./...
+
+.PHONY: update-readme
+update-readme: test-cover
+	@echo "Updating README.md with test coverage..."
+	@COVERAGE=$$(go tool cover -func=$(COVERAGE_FILE) | grep total | awk '{print $$3}'); \
+	PERCENT=$$(echo $$COVERAGE | tr -d '%'); \
+	sed -i "" "s|!\[Coverage\](https://img.shields.io/badge/coverage-[0-9.]*%25-brightgreen)|![Coverage](https://img.shields.io/badge/coverage-$${PERCENT}%25-brightgreen)|" README.md; \
+	echo "Updated README.md with Coverage: $${COVERAGE}"
+
+.PHONY: clean
+clean:
+	@echo "Cleaning up coverage files..."
+	@rm -f $(COVERAGE_FILE)
+
 dep:
 	go mod tidy
 
@@ -17,11 +37,11 @@ run:
 test:
 	go test ./...
 
-test-cover:
-	go test -cover ./...
-
 lint:
-	golangci-lint run ./...
+	golangci-lint run -E gocritic ./...
+
+mocks:
+	mockery --name=IService --dir=internal/app/services --output=internal/mocks
 
 check-migrate:
 	which migrate || (go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest)

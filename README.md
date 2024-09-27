@@ -81,3 +81,10 @@ make test
 
 ## Test coverage
 
+![Coverage](https://img.shields.io/badge/coverage-30.8%25-brightgreen)
+
+To update test coverage, run:
+
+```shell
+make update-readme
+```

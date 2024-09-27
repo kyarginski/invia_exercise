@@ -10,14 +10,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 
-	"invia/internal/app/services/mocks"
+	"invia/internal/mocks"
 
 	"invia/api/restapi"
 	"invia/internal/lib/logger/sl"
 )
 
 func TestCreateUser(t *testing.T) {
-	mockService := new(mocks.MockIService)
+	mockService := new(mocks.IService)
 	logger := sl.SetupLogger("nop")
 
 	server := NewRestApiServer(mockService, logger)
@@ -50,7 +50,7 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestGetUserById(t *testing.T) {
-	mockService := new(mocks.MockIService)
+	mockService := new(mocks.IService)
 	logger := sl.SetupLogger("nop")
 
 	server := NewRestApiServer(mockService, logger)
@@ -81,7 +81,7 @@ func TestGetUserById(t *testing.T) {
 }
 
 func TestDeleteUser(t *testing.T) {
-	mockService := new(mocks.MockIService)
+	mockService := new(mocks.IService)
 	logger := sl.SetupLogger("nop")
 
 	server := NewRestApiServer(mockService, logger)
@@ -99,7 +99,7 @@ func TestDeleteUser(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
-	mockService := new(mocks.MockIService)
+	mockService := new(mocks.IService)
 	logger := sl.SetupLogger("nop")
 
 	server := NewRestApiServer(mockService, logger)
